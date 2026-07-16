@@ -10,4 +10,12 @@ async function findLeadByPhone(phoneNumber) {
   return prisma.lead.findUnique({ where: { phoneNumber } });
 }
 
-module.exports = { createLead, findLeadByPhone };
+async function findAllLeads() {
+  return prisma.lead.findMany({ orderBy: { createdAt: 'desc' } });
+}
+
+async function findLeadById(id) {
+  return prisma.lead.findUnique({ where: { id } });
+}
+
+module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById };
