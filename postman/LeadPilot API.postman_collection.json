@@ -57,6 +57,55 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "List leads",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Test Lead\",\r\n  \"phoneNumber\": \"+15551234567\",\r\n  \"source\": \"manual test\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get lead by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Test Lead\",\r\n  \"phoneNumber\": \"+15551234567\",\r\n  \"source\": \"manual test\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "1"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
