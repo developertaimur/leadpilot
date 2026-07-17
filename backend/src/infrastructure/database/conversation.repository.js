@@ -12,11 +12,17 @@ async function findAllConversations() {
 }
 
 async function findConversationById(id) {
-  return prisma.conversation.findUnique({ where: { id }, include: { lead: true } });
+  return prisma.conversation.findUnique({
+    where: { id },
+    include: { lead: true, messages: { orderBy: { createdAt: 'asc' } } },
+  });
 }
 
 async function findConversationByLeadId(leadId) {
-  return prisma.conversation.findUnique({ where: { leadId }, include: { lead: true } });
+  return prisma.conversation.findUnique({
+    where: { leadId },
+    include: { lead: true, messages: { orderBy: { createdAt: 'asc' } } },
+  });
 }
 
 async function setHumanTakeover(id, humanTakeover) {
