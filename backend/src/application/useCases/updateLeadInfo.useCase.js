@@ -6,17 +6,21 @@ async function updateLeadInfo(id, { name, phoneNumber, source }) {
     throw new Error('Lead not found');
   }
 
-  if (phoneNumber && phoneNumber !== lead.phoneNumber) {
-    const existing = await leadRepository.findLeadByPhone(phoneNumber);
+  const cleanPhone = phoneNumber !== undefined ? phoneNumber.trim() : undefined;
+  const cleanName = name !== undefined ? name.trim() : undefined;
+  const cleanSource = source !== undefined ? source.trim() : undefined;
+
+  if (cleanPhone && cleanPhone !== lead.phoneNumber) {
+    const existing = await leadRepository.findLeadByPhone(cleanPhone);
     if (existing) {
       throw new Error('Another lead already uses this phone number');
     }
   }
 
   const data = {};
-  if (name !== undefined) data.name = name;
-  if (phoneNumber !== undefined) data.phoneNumber = phoneNumber;
-  if (source !== undefined) data.source = source;
+  if (cleanName !== undefined) data.name = cleanName;
+  if (cleanPhone !== undefined) data.phoneNumber = cleanPhone;
+  if (cleanSource !== undefined) data.source = cleanSource;
 
   return leadRepository.updateLeadInfo(id, data);
 }

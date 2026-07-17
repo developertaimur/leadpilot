@@ -4,6 +4,7 @@ const getLeadByIdUseCase = require('../../application/useCases/getLeadById.useCa
 const updateLeadStageUseCase = require('../../application/useCases/updateLeadStage.useCase');
 const deleteLeadUseCase = require('../../application/useCases/deleteLead.useCase');
 const updateLeadInfoUseCase = require('../../application/useCases/updateLeadInfo.useCase');
+const getLeadStatsUseCase = require('../../application/useCases/getLeadStats.useCase');
 
 async function createLead(req, res) {
   try {
@@ -15,8 +16,18 @@ async function createLead(req, res) {
 }
 
 async function listLeads(req, res) {
-  const leads = await listLeadsUseCase.listLeads();
-  res.json(leads);
+  try {
+    const { stage, source, channel } = req.query;
+    const leads = await listLeadsUseCase.listLeads({ stage, source, channel });
+    res.json(leads);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+async function getStats(req, res) {
+  const stats = await getLeadStatsUseCase.getLeadStats();
+  res.json(stats);
 }
 
 async function getLead(req, res) {
@@ -62,4 +73,4 @@ async function updateInfo(req, res) {
   }
 }
 
-module.exports = { createLead, listLeads, getLead, updateStage, removeLead, updateInfo };
+module.exports = { createLead, listLeads, getLead, updateStage, removeLead, updateInfo, getStats };
