@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `campaign` ADD COLUMN `status` ENUM('ACTIVE', 'PAUSED') NOT NULL DEFAULT 'PAUSED';

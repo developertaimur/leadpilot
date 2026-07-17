@@ -1,9 +1,13 @@
 const prisma = require('./prismaClient');
 
-async function createLead({ name, phoneNumber, source }) {
-  return prisma.lead.create({
-    data: { name, phoneNumber, source },
-  });
+// async function createLead({ name, phoneNumber, source }) {
+//   return prisma.lead.create({
+//     data: { name, phoneNumber, source },
+//   });
+// }
+
+async function createLead({ name, phoneNumber, source, campaignId }) {
+  return prisma.lead.create({ data: { name, phoneNumber, source, campaignId } });
 }
 
 async function findLeadByPhone(phoneNumber) {

@@ -6,9 +6,19 @@ const deleteLeadUseCase = require('../../application/useCases/deleteLead.useCase
 const updateLeadInfoUseCase = require('../../application/useCases/updateLeadInfo.useCase');
 const getLeadStatsUseCase = require('../../application/useCases/getLeadStats.useCase');
 
+// async function createLead(req, res) {
+//   try {
+//     const lead = await createLeadUseCase.createLead(req.body);
+//     res.status(201).json(lead);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// }
+
 async function createLead(req, res) {
   try {
-    const lead = await createLeadUseCase.createLead(req.body);
+    const { name, phoneNumber, source, campaignId } = req.body || {};
+    const lead = await createLeadUseCase.createLead({ name, phoneNumber, source, campaignId });
     res.status(201).json(lead);
   } catch (err) {
     res.status(400).json({ error: err.message });

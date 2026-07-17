@@ -54,10 +54,16 @@ model Message {
   createdAt      DateTime      @default(now())
 }
 
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+}
+
 model Campaign {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   name      String
   source    String?
+  status    CampaignStatus @default(PAUSED)
   leads     Lead[]
-  createdAt DateTime @default(now())
+  createdAt DateTime       @default(now())
 }
