@@ -18,4 +18,12 @@ async function findLeadById(id) {
   return prisma.lead.findUnique({ where: { id } });
 }
 
-module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById };
+async function updateLeadStage(id, stage) {
+  return prisma.lead.update({ where: { id }, data: { stage } });
+}
+
+async function deleteLead(id) {
+  return prisma.lead.delete({ where: { id } });
+}
+
+module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead };
