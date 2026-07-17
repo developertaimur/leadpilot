@@ -3,6 +3,7 @@ const listLeadsUseCase = require('../../application/useCases/listLeads.useCase')
 const getLeadByIdUseCase = require('../../application/useCases/getLeadById.useCase');
 const updateLeadStageUseCase = require('../../application/useCases/updateLeadStage.useCase');
 const deleteLeadUseCase = require('../../application/useCases/deleteLead.useCase');
+const updateLeadInfoUseCase = require('../../application/useCases/updateLeadInfo.useCase');
 
 async function createLead(req, res) {
   try {
@@ -50,4 +51,15 @@ async function removeLead(req, res) {
   }
 }
 
-module.exports = { createLead, listLeads, getLead, updateStage, removeLead };
+async function updateInfo(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const lead = await updateLeadInfoUseCase.updateLeadInfo(id, req.body);
+    res.json(lead);
+  } catch (err) {
+    const status = err.message === 'Lead not found' ? 404 : 400;
+    res.status(status).json({ error: err.message });
+  }
+}
+
+module.exports = { createLead, listLeads, getLead, updateStage, removeLead, updateInfo };

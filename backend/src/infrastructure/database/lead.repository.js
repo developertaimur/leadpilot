@@ -26,4 +26,8 @@ async function deleteLead(id) {
   return prisma.lead.delete({ where: { id } });
 }
 
-module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead };
+async function updateLeadInfo(id, data) {
+  return prisma.lead.update({ where: { id }, data });
+}
+
+module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead, updateLeadInfo };
