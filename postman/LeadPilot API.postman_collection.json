@@ -39,7 +39,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"name\": \"T Test  \",\r\n  \"phoneNumber\": \"  +15859997888  \",\r\n  \"source\": \" test source  \"\r\n}",
+              "raw": "{\"name\": \"Batch Lead Four\", \"phoneNumber\": \"+15984000422\", \"campaignId\": 4}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -338,16 +338,26 @@
         {
           "name": "Get by id",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"sender\": \"LEAD\", \"content\": \"Still there?\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/conversations/1",
+              "raw": "{{baseUrl}}/conversations/2/messages",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "conversations",
-                "1"
+                "2",
+                "messages"
               ]
             }
           },
@@ -578,7 +588,192 @@
     },
     {
       "name": "Campaigns",
-      "item": []
+      "item": [
+        {
+          "name": "Create campaign",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Oct Sheet Batch\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Try sending while paused",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"count\": 5}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/4/send-batch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "4",
+                "send-batch"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate it",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\": \"ACTIVE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/4/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "4",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send a batch of 1",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"count\": 1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/4/send-batch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "4",
+                "send-batch"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm the ripple effects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/13",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "13"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "send again with count 5",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"count\": 5}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/4/send-batch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "4",
+                "send-batch"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "The real safety test",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\": \"PAUSED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/4/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "4",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
