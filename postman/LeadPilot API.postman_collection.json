@@ -39,7 +39,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"name\": \"Test Lead\",\r\n  \"phoneNumber\": \"+15551234567\",\r\n  \"source\": \"manual test\"\r\n}",
+              "raw": "{\r\n  \"name\": \"Gymfinity\",\r\n  \"phoneNumber\": \"+15521234567\",\r\n  \"source\": \"manual test 2\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -95,13 +95,59 @@
               "raw": "{\r\n  \"name\": \"Test Lead\",\r\n  \"phoneNumber\": \"+15551234567\",\r\n  \"source\": \"manual test\"\r\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/leads/1",
+              "raw": "{{baseUrl}}/leads/3",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "leads",
-                "1"
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"stage\": \"LOST\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/1/stage",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "1",
+                "stage"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "4"
               ]
             }
           },
