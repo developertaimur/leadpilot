@@ -58,7 +58,11 @@ async function removeLead(req, res) {
     await deleteLeadUseCase.deleteLead(id);
     res.status(204).send();
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    if (err.message === 'Lead not found') return res.status(404).json({ error: err.message });
+    if (err.message === 'Cannot delete a lead with an existing conversation') {
+      return res.status(409).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Something went wrong' });
   }
 }
 
