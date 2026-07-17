@@ -39,7 +39,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"name\": \"Gymfinity\",\r\n  \"phoneNumber\": \"+15521234567\",\r\n  \"source\": \"manual test 2\"\r\n}",
+              "raw": "{\r\n  \"name\": \"test lead \",\r\n  \"phoneNumber\": \"123456799\",\r\n  \"source\": \"manual test \"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -95,20 +95,20 @@
               "raw": "{\r\n  \"name\": \"Test Lead\",\r\n  \"phoneNumber\": \"+15551234567\",\r\n  \"source\": \"manual test\"\r\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/leads/3",
+              "raw": "{{baseUrl}}/leads/6",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "leads",
-                "3"
+                "6"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "PATCH",
+          "name": "Update lead stage",
           "request": {
             "method": "PATCH",
             "header": [],
@@ -122,13 +122,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/leads/1/stage",
+              "raw": "{{baseUrl}}/leads/6/stage",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "leads",
-                "1",
+                "6",
                 "stage"
               ]
             }
@@ -136,18 +136,72 @@
           "response": []
         },
         {
-          "name": "DELETE",
+          "name": "Delete lead",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/leads/4",
+              "raw": "{{baseUrl}}/leads/6",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "leads",
-                "4"
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update lead info",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"9876542342\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate Phone Number Test",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"+15521234567\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "6"
               ]
             }
           },
