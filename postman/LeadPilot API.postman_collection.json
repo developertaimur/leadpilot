@@ -39,7 +39,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"name\": \"test lead \",\r\n  \"phoneNumber\": \"123456799\",\r\n  \"source\": \"manual test \"\r\n}",
+              "raw": "{\r\n  \"name\": \"T Test  \",\r\n  \"phoneNumber\": \"  +15859997888  \",\r\n  \"source\": \" test source  \"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -202,6 +202,60 @@
               "path": [
                 "leads",
                 "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get lead stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List leads (filtered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads?stage=banana",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "channel",
+                  "value": "inbound",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "stage",
+                  "value": "banana",
+                  "type": "text"
+                },
+                {
+                  "key": "source",
+                  "value": "manual test ",
+                  "type": "text",
+                  "disabled": true
+                }
               ]
             }
           },
