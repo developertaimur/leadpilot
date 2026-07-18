@@ -60,10 +60,13 @@ enum CampaignStatus {
 }
 
 model Campaign {
-  id        Int            @id @default(autoincrement())
-  name      String
-  source    String?
-  status    CampaignStatus @default(PAUSED)
-  leads     Lead[]
-  createdAt DateTime       @default(now())
+  id                 Int            @id @default(autoincrement())
+  name               String
+  source             String?
+  status             CampaignStatus @default(PAUSED)
+  googleSheetId      String?
+  googleSheetTabName String?
+  leads              Lead[]
+  createdAt          DateTime       @default(now())
 }
+
