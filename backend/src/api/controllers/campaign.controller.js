@@ -4,6 +4,7 @@ const getCampaignByIdUseCase = require('../../application/useCases/getCampaignBy
 const updateCampaignStatusUseCase = require('../../application/useCases/updateCampaignStatus.useCase');
 const sendBatchUseCase = require('../../application/useCases/sendBatch.useCase');
 const updateCampaignSheetConfigUseCase = require('../../application/useCases/updateCampaignSheetConfig.useCase');
+const syncCampaignFromSheetUseCase = require('../../application/useCases/syncCampaignFromSheet.useCase');
 
 async function createCampaign(req, res) {
   try {
@@ -64,4 +65,14 @@ async function updateSheetConfig(req, res) {
   }
 }
 
-module.exports = { createCampaign, listCampaigns, getCampaign, updateStatus, sendBatch, updateSheetConfig };
+async function syncSheet(req, res) {
+  try {
+    const result = await syncCampaignFromSheetUseCase.syncCampaignFromSheet(Number(req.params.id));
+    res.json(result);
+  } catch (err) {
+    const status = err.message === 'Campaign not found' ? 404 : 400;
+    res.status(status).json({ error: err.message });
+  }
+}
+
+module.exports = { createCampaign, listCampaigns, getCampaign, updateStatus, sendBatch, updateSheetConfig, syncSheet };
