@@ -260,6 +260,29 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "source=Google Maps",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads?source=Referral",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "source",
+                  "value": "Referral"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -768,6 +791,53 @@
                 "campaigns",
                 "4",
                 "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "sheet-config",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"googleSheetId\": \"1UXN8X_QDvQcE18sCbH5V5A5c5bogH5peCll3kDbT9A0\",\r\n  \"googleSheetTabName\": \"Sheet1\",\r\n  \"defaultRegion\": \"PK\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/5/sheet-config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "5",
+                "sheet-config"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "sync-sheet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/campaigns/3/sync-sheet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns",
+                "3",
+                "sync-sheet"
               ]
             }
           },
