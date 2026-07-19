@@ -31,6 +31,10 @@ async function findLeadsForBatch(campaignId, count) {
   });
 }
 
+async function updateSheetConfig(id, data) {
+  return prisma.campaign.update({ where: { id }, data });
+}
+
 module.exports = {
   createCampaign,
   findAllCampaigns,
@@ -38,4 +42,5 @@ module.exports = {
   findCampaignWithLeads,
   updateCampaignStatus,
   findLeadsForBatch,
+  updateSheetConfig,
 };

@@ -3,6 +3,7 @@ const listCampaignsUseCase = require('../../application/useCases/listCampaigns.u
 const getCampaignByIdUseCase = require('../../application/useCases/getCampaignById.useCase');
 const updateCampaignStatusUseCase = require('../../application/useCases/updateCampaignStatus.useCase');
 const sendBatchUseCase = require('../../application/useCases/sendBatch.useCase');
+const updateCampaignSheetConfigUseCase = require('../../application/useCases/updateCampaignSheetConfig.useCase');
 
 async function createCampaign(req, res) {
   try {
@@ -50,4 +51,17 @@ async function sendBatch(req, res) {
   }
 }
 
-module.exports = { createCampaign, listCampaigns, getCampaign, updateStatus, sendBatch };
+async function updateSheetConfig(req, res) {
+  try {
+    const { googleSheetId, googleSheetTabName, defaultRegion } = req.body || {};
+    const campaign = await updateCampaignSheetConfigUseCase.updateCampaignSheetConfig(
+      Number(req.params.id),
+      { googleSheetId, googleSheetTabName, defaultRegion }
+    );
+    res.json(campaign);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+}
+
+module.exports = { createCampaign, listCampaigns, getCampaign, updateStatus, sendBatch, updateSheetConfig };
