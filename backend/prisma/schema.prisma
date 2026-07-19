@@ -66,6 +66,7 @@ model Campaign {
   status             CampaignStatus @default(PAUSED)
   googleSheetId      String?
   googleSheetTabName String?
+  defaultRegion      String?
   leads              Lead[]
   createdAt          DateTime       @default(now())
 }
