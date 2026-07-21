@@ -1,37 +1,39 @@
 const leadRepository = require('../../infrastructure/database/lead.repository');
-
-// async function createLead({ name, phoneNumber, source }) {
-//   const cleanPhone = phoneNumber?.trim();
-//   const cleanName = name?.trim() || null;
-//   const cleanSource = source?.trim() || null;
-
-//   if (!cleanPhone) {
-//     throw new Error('Phone number is required');
-//   }
-
-//   const existing = await leadRepository.findLeadByPhone(cleanPhone);
-//   if (existing) {
-//     throw new Error('A lead with this phone number already exists');
-//   }
-
-//   return leadRepository.createLead({ name: cleanName, phoneNumber: cleanPhone, source: cleanSource });
-// }
+const campaignRepository = require('../../infrastructure/database/campaign.repository');
+const { normalizePhoneNumber } = require('../../domain/rules/phoneNumber.rules');
+const { defaultPhoneRegion } = require('../../config/env');
 
 async function createLead({ name, phoneNumber, source, campaignId }) {
-  const cleanPhone = phoneNumber?.trim();
   const cleanName = name?.trim() || null;
   const cleanSource = source?.trim() || null;
 
-  if (!cleanPhone) {
-    throw new Error('Phone number is required');
+  let region = defaultPhoneRegion;
+  if (campaignId) {
+    const campaign = await campaignRepository.findCampaignById(campaignId);
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
+    if (campaign.defaultRegion) {
+      region = campaign.defaultRegion;
+    }
   }
 
-  const existing = await leadRepository.findLeadByPhone(cleanPhone);
+  const normalized = normalizePhoneNumber(phoneNumber, region);
+  if (!normalized.valid) {
+    throw new Error(`Invalid phone number: ${normalized.reason}`);
+  }
+
+  const existing = await leadRepository.findLeadByPhone(normalized.e164);
   if (existing) {
     throw new Error('A lead with this phone number already exists');
   }
 
-  return leadRepository.createLead({ name: cleanName, phoneNumber: cleanPhone, source: cleanSource, campaignId: campaignId ?? null });
+  return leadRepository.createLead({
+    name: cleanName,
+    phoneNumber: normalized.e164,
+    source: cleanSource,
+    campaignId: campaignId ?? null,
+  });
 }
 
 module.exports = { createLead };
