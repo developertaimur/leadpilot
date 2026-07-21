@@ -58,4 +58,8 @@ async function getLeadStats() {
   return { total, outbound, inbound, converted, lost, byStage };
 }
 
-module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead, updateLeadInfo, getLeadStats };
+async function updateLeadCampaign(id, campaignId) {
+  return prisma.lead.update({ where: { id }, data: { campaignId } });
+}
+
+module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead, updateLeadInfo, getLeadStats, updateLeadCampaign };

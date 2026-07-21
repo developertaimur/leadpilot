@@ -5,6 +5,7 @@ const updateLeadStageUseCase = require('../../application/useCases/updateLeadSta
 const deleteLeadUseCase = require('../../application/useCases/deleteLead.useCase');
 const updateLeadInfoUseCase = require('../../application/useCases/updateLeadInfo.useCase');
 const getLeadStatsUseCase = require('../../application/useCases/getLeadStats.useCase');
+const assignLeadCampaignUseCase = require('../../application/useCases/assignLeadCampaign.useCase');
 
 // async function createLead(req, res) {
 //   try {
@@ -88,4 +89,15 @@ async function updateInfo(req, res) {
   }
 }
 
-module.exports = { createLead, listLeads, getLead, updateStage, removeLead, updateInfo, getStats };
+async function assignCampaign(req, res) {
+  try {
+    const { campaignId } = req.body || {};
+    const lead = await assignLeadCampaignUseCase.assignLeadCampaign(Number(req.params.id), campaignId);
+    res.json(lead);
+  } catch (err) {
+    const status = err.message.includes('not found') ? 404 : 400;
+    res.status(status).json({ error: err.message });
+  }
+}
+
+module.exports = { createLead, listLeads, getLead, updateStage, removeLead, updateInfo, getStats, assignCampaign };
