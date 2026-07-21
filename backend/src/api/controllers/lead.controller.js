@@ -21,7 +21,8 @@ async function createLead(req, res) {
     const lead = await createLeadUseCase.createLead({ name, phoneNumber, source, campaignId });
     res.status(201).json(lead);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    const status = err.message === 'Campaign not found' ? 404 : 400;
+    res.status(status).json({ error: err.message });
   }
 }
 
