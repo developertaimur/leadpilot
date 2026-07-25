@@ -12,4 +12,10 @@ function verifyWebhook(req, res) {
   res.sendStatus(403);
 }
 
-module.exports = { verifyWebhook };
+function receiveWebhook(req, res) {
+  console.log('WhatsApp webhook received:', JSON.stringify(req.body, null, 2));
+  res.sendStatus(200);
+}
+
+module.exports = { verifyWebhook, receiveWebhook };
+
