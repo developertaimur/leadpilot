@@ -1,4 +1,6 @@
 const { whatsappWebhookVerifyToken } = require('../../config/env');
+const { parseIncomingMessage } = require('../../infrastructure/whatsapp/whatsapp.parser');
+const { handleIncomingWhatsAppMessage } = require('../../application/useCases/handleIncomingWhatsAppMessage.useCase');
 
 function verifyWebhook(req, res) {
   const mode = req.query['hub.mode'];
@@ -8,14 +10,20 @@ function verifyWebhook(req, res) {
   if (mode === 'subscribe' && token === whatsappWebhookVerifyToken) {
     return res.status(200).send(challenge);
   }
-
   res.sendStatus(403);
 }
 
-function receiveWebhook(req, res) {
-  console.log('WhatsApp webhook received:', JSON.stringify(req.body, null, 2));
+async function receiveWebhook(req, res) {
   res.sendStatus(200);
+
+  try {
+    const parsed = parseIncomingMessage(req.body);
+    if (parsed) {
+      await handleIncomingWhatsAppMessage(parsed);
+    }
+  } catch (err) {
+    console.error('Error handling incoming WhatsApp message:', err.message);
+  }
 }
 
 module.exports = { verifyWebhook, receiveWebhook };
-
