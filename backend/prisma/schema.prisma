@@ -46,12 +46,13 @@ model Conversation {
 }
 
 model Message {
-  id             Int           @id @default(autoincrement())
-  conversationId Int
-  conversation   Conversation  @relation(fields: [conversationId], references: [id])
-  sender         MessageSender
-  content        String        @db.Text
-  createdAt      DateTime      @default(now())
+  id                Int           @id @default(autoincrement())
+  conversationId    Int
+  conversation      Conversation  @relation(fields: [conversationId], references: [id])
+  sender            MessageSender
+  content           String        @db.Text
+  whatsappMessageId String?       @unique
+  createdAt         DateTime      @default(now())
 }
 
 enum CampaignStatus {

@@ -17,6 +17,7 @@ function parseIncomingMessage(body) {
     phoneNumber: message.from,
     text: message.text.body,
     name: contact?.profile?.name || null,
+    whatsappMessageId: message.id,
   };
 }
 

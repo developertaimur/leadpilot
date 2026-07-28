@@ -3,7 +3,7 @@ const messageRepository = require('../../infrastructure/database/message.reposit
 const leadRepository = require('../../infrastructure/database/lead.repository');
 const { MessageSender } = require('@prisma/client');
 
-async function createMessage(conversationId, { sender, content }) {
+async function createMessage(conversationId, { sender, content, whatsappMessageId }) {
   if (!Object.values(MessageSender).includes(sender)) {
     throw new Error(`Invalid sender. Must be one of: ${Object.values(MessageSender).join(', ')}`);
   }
@@ -20,6 +20,7 @@ async function createMessage(conversationId, { sender, content }) {
     conversationId,
     sender,
     content: content.trim(),
+    whatsappMessageId,
   });
 
   if ((sender === 'AI' || sender === 'HUMAN') && conversation.lead.stage === 'NEW') {
