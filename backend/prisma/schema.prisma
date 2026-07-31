@@ -22,6 +22,10 @@ enum MessageSender {
   HUMAN
 }
 
+enum ConversationChannel {
+  WHATSAPP
+}
+
 model Lead {
   id           Int           @id @default(autoincrement())
   name         String?
@@ -36,13 +40,14 @@ model Lead {
 }
 
 model Conversation {
-  id              Int       @id @default(autoincrement())
-  leadId          Int       @unique
-  lead            Lead      @relation(fields: [leadId], references: [id])
-  humanTakeover   Boolean   @default(false)
-  messages        Message[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id            Int                 @id @default(autoincrement())
+  leadId        Int                 @unique
+  lead          Lead                @relation(fields: [leadId], references: [id])
+  humanTakeover Boolean             @default(false)
+  channel       ConversationChannel @default(WHATSAPP)
+  messages      Message[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 }
 
 model Message {
@@ -71,4 +76,5 @@ model Campaign {
   leads              Lead[]
   createdAt          DateTime       @default(now())
 }
+
 

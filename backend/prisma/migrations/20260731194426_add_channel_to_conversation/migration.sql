@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `conversation` ADD COLUMN `channel` ENUM('WHATSAPP') NOT NULL DEFAULT 'WHATSAPP';
