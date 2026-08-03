@@ -844,6 +844,54 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Business Profile",
+      "item": [
+        {
+          "name": "Get business profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/business-profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "business-profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set business profile",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Gymfinity\", \"context\": \"Updated placeholder — testing that this updates in place.\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "business-profile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

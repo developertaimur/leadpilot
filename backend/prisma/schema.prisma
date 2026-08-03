@@ -77,4 +77,12 @@ model Campaign {
   createdAt          DateTime       @default(now())
 }
 
+model BusinessProfile {
+  id        Int      @id @default(autoincrement())
+  name      String
+  context   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 

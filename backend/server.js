@@ -6,6 +6,7 @@ const conversationRoutes = require('./src/api/routes/conversation.routes');
 const messageRoutes = require('./src/api/routes/message.routes');
 const campaignRoutes = require('./src/api/routes/campaign.routes');
 const whatsappRoutes = require('./src/api/routes/whatsapp.routes');
+const businessProfileRoutes = require('./src/api/routes/businessProfile.routes');
 
 const app = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use('/api', conversationRoutes);
 app.use('/api', messageRoutes);
 app.use('/api', campaignRoutes);
 app.use('/api', whatsappRoutes);
+app.use('/api', businessProfileRoutes)
 
 app.listen(port, () => {
   console.log(`LeadPilot backend running on port ${port}`);
