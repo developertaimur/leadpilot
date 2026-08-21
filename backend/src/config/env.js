@@ -10,4 +10,5 @@ module.exports = {
   whatsappBusinessAccountId: process.env.WHATSAPP_BUSINESS_ACCOUNT_ID,
   whatsappWebhookVerifyToken: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN,
   geminiApiKey: process.env.GEMINI_API_KEY,
+  groqApiKey: process.env.GROQ_API_KEY,
 };
