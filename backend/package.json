@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --env-file=test/test.env --require ./test/setup.js --test \"test/**/*.test.js\"",
     "dev": "nodemon server.js"
   },
   "keywords": [],
