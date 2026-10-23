@@ -3,8 +3,8 @@ const businessProfileRepository = require('../../infrastructure/database/busines
 
 async function setProfile(req, res) {
   try {
-    const { name, context } = req.body || {};
-    const profile = await setBusinessProfileUseCase.setBusinessProfile({ name, context });
+    const { name, context, salesInstructions } = req.body || {};
+    const profile = await setBusinessProfileUseCase.setBusinessProfile({ name, context, salesInstructions });
     res.json(profile);
   } catch (err) {
     res.status(400).json({ error: err.message });
