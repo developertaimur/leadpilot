@@ -11,7 +11,7 @@ so staff can step into any conversation.
 - AI: Gemini (`@google/genai`) primary, Groq (`groq-sdk`) fallback — installed, not yet wired
 - Socket.IO — installed, not yet wired
 
-All commands run from `backend/`. Dev server: `npm run dev` (nodemon). No test suite yet.
+All commands run from `backend/`. Dev server: `npm run dev` (nodemon). Tests: `npm test` (node:test).
 
 ## Structure (`backend/src`)
 Requests flow: route → controller → use case → repository → Prisma.
@@ -35,7 +35,7 @@ Requests flow: route → controller → use case → repository → Prisma.
 - **Conversation** — one per lead (`leadId` unique), `humanTakeover` bool, `channel` (WHATSAPP)
 - **Message** — conversationId, sender `LEAD|AI|HUMAN`, content, whatsappMessageId? (unique, dedupes webhook retries)
 - **Campaign** — name, source?, status `ACTIVE|PAUSED`, googleSheetId?, googleSheetTabName?, defaultRegion?
-- **BusinessProfile** — single row: name, context. **No `salesInstructions` field yet** (needs a migration).
+- **BusinessProfile** — single row: name, context, salesInstructions? (Text)
 - `LeadStage`: NEW, CONTACTED, INTERESTED, QUALIFIED, CONVERTED, LOST
 
 ## Built vs not built
@@ -45,17 +45,18 @@ Requests flow: route → controller → use case → repository → Prisma.
 - Inbound webhook: verify, parse first text message, dedupe, auto-create lead + conversation, save message
 - Outbound sending for AI/HUMAN messages via channel registry; first outbound moves NEW → CONTACTED
 - Campaign `send-batch` (hardcoded greeting text, not a WhatsApp template)
-- BusinessProfile get/upsert
+- BusinessProfile: `GET` + `PUT /api/business-profile` with partial updates (omitted fields unchanged;
+  `salesInstructions` null/empty/whitespace → null; `name` + `context` required only when creating)
+- node:test suite (`npm test`) — currently covers BusinessProfile only
 
 **Not built**
 - AI reply generation (`infrastructure/ai/` empty, no `generateReply`)
 - Anything that reads `humanTakeover`
-- `BusinessProfile.salesInstructions`
 - WhatsApp template messages (required for first contact / outside the 24h window)
 - Non-text inbound (voice notes, media); multi-message webhook batches
 - Socket.IO realtime
 - Auth on any endpoint; webhook `X-Hub-Signature-256` verification
-- Tests
+- Tests for anything other than BusinessProfile
 
 **Planned, not built — AI stage suggestions**
 - `Lead.aiSuggestedStage` (nullable `LeadStage`) and `Lead.aiSuggestionReason` (nullable) store the AI's latest suggestion.
@@ -78,6 +79,33 @@ Requests flow: route → controller → use case → repository → Prisma.
 - Windows: **stop the dev server before any `npx prisma migrate` / `npx prisma generate`**, then fully
   restart it. nodemon ignores `node_modules`, so it will not pick up a regenerated client.
 - Windows: use `curl.exe`, not `curl` (PowerShell aliases `curl` to `Invoke-WebRequest`).
+
+### Testing workflow (standing rules)
+- Every code change includes tests. Run `npm test` before reporting a task done, and report the full
+  results, changed files and final diff.
+- Tests use `node:test` with zero extra dependencies. Files live in `backend/test/**/*.test.js`.
+  Never run `test-send-whatsapp.js` (it sends a real WhatsApp message).
+- All external services are mocked: WhatsApp, Gemini, Groq, Google Sheets. The fetch guard in
+  `test/setup.js` and the fake values in `test/test.env` must stay in place.
+- Whenever a new key is added to `src/config/env.js`, add a fake value for it to `test/test.env` and
+  extend `test/safety.test.js` in the same task.
+- Never modify real dev or production data in tests. Integration tests against a database are not
+  allowed until a separate isolated test database is approved.
+- If an implementation failure appears, show the failure and the proposed fix before changing
+  application code.
+- Do not install dependencies, commit or push without approval.
+
+Test layout: `test/test.env` (fake env, loaded via `--env-file`), `test/setup.js` (blocks non-local
+`fetch`), `test/helpers/startApp.js` (mounts routers under `/api` on a random port),
+`test/safety.test.js` (canary — if it fails, stop), `test/useCases/`, `test/routes/`.
+Mock with `mock.method(moduleObject, 'fn')` and always `mock.restoreAll()` in `afterEach`.
+
+**Known limits**
+- `syncCampaignFromSheet` destructures `getSheetRows` at require time, so it can't be mocked yet.
+- `server.js` creates the app and calls `listen()` in one file, so tests can't import it; route tests
+  use `startApp` instead.
+- `whatsapp.controller.js` destructures `handleIncomingWhatsAppMessage` at require time, so webhook
+  route tests can't mock that use case yet.
 
 ### AI providers
 - **Gemini** (primary): SDK is `@google/genai` — NOT the legacy `@google/generative-ai`. Model `gemini-3.5-flash`.
