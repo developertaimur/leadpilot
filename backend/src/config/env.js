@@ -9,6 +9,10 @@ module.exports = {
   whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
   whatsappBusinessAccountId: process.env.WHATSAPP_BUSINESS_ACCOUNT_ID,
   whatsappWebhookVerifyToken: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN,
+  openwaBaseUrl: process.env.OPENWA_BASE_URL,
+  openwaApiKey: process.env.OPENWA_API_KEY,
+  openwaSessionId: process.env.OPENWA_SESSION_ID,
+  openwaWebhookSecret: process.env.OPENWA_WEBHOOK_SECRET,
   geminiApiKey: process.env.GEMINI_API_KEY,
   groqApiKey: process.env.GROQ_API_KEY,
 };
