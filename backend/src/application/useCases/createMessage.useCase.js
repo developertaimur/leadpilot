@@ -17,19 +17,21 @@ async function createMessage(conversationId, { sender, content, whatsappMessageI
     throw new Error('Conversation not found');
   }
 
+  let sentMessageId;
   if (sender === 'AI' || sender === 'HUMAN') {
     const send = channelSenders[conversation.channel];
     if (!send) {
       throw new Error(`No sender configured for channel: ${conversation.channel}`);
     }
-    await send(conversation.lead, content.trim());
+    const sent = await send(conversation.lead, content.trim());
+    sentMessageId = sent?.messageId ?? undefined;
   }
 
   const message = await messageRepository.createMessage({
     conversationId,
     sender,
     content: content.trim(),
-    whatsappMessageId,
+    whatsappMessageId: whatsappMessageId ?? sentMessageId,
   });
 
   if ((sender === 'AI' || sender === 'HUMAN') && conversation.lead.stage === 'NEW') {

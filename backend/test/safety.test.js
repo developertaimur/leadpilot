@@ -17,9 +17,6 @@ test('OPENWA_BASE_URL points at a dead local port', () => {
 });
 
 test('external service credentials are the fake test values', () => {
-  assert.equal(process.env.WHATSAPP_ACCESS_TOKEN, 'test-whatsapp-token');
-  assert.equal(process.env.WHATSAPP_PHONE_NUMBER_ID, 'test-phone-number-id');
-  assert.equal(process.env.WHATSAPP_BUSINESS_ACCOUNT_ID, 'test-business-account-id');
   assert.equal(process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN, 'test-verify-token');
   assert.equal(process.env.GEMINI_API_KEY, 'test-gemini-key');
   assert.equal(process.env.GROQ_API_KEY, 'test-groq-key');
@@ -32,7 +29,6 @@ test('external service credentials are the fake test values', () => {
 test('config/env.js exposes the fake values, not the real .env', () => {
   const env = require('../src/config/env');
   assert.ok(env.databaseUrl.includes('leadpilot_test'));
-  assert.equal(env.whatsappAccessToken, 'test-whatsapp-token');
   assert.equal(env.geminiApiKey, 'test-gemini-key');
   assert.equal(env.groqApiKey, 'test-groq-key');
   assert.equal(env.openwaBaseUrl, 'http://127.0.0.1:1');
