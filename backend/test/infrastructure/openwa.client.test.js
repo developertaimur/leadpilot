@@ -96,6 +96,28 @@ describe('openwaClient.sendText', () => {
     });
   });
 
+  test('a connection that was never established is UNREACHABLE and marked neverConnected', async () => {
+    const refused = Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:2785'), { code: 'ECONNREFUSED', syscall: 'connect' });
+    const allRefused = new AggregateError([refused, refused], 'connect failed');
+    for (const cause of [refused, Object.assign(new Error('getaddrinfo ENOTFOUND'), { code: 'ENOTFOUND' }), allRefused]) {
+      mock.method(globalThis, 'fetch', async () => {
+        throw new TypeError('fetch failed', { cause });
+      });
+      await assert.rejects(sendText('923001234567@c.us', 'Hi'), { code: 'UNREACHABLE', neverConnected: true });
+      mock.restoreAll();
+    }
+  });
+
+  test('a connection that broke after connecting, or a failure it cannot explain, is not marked neverConnected', async () => {
+    for (const cause of [Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' }), new Error('bad port'), undefined]) {
+      mock.method(globalThis, 'fetch', async () => {
+        throw new TypeError('fetch failed', { cause });
+      });
+      await assert.rejects(sendText('923001234567@c.us', 'Hi'), { code: 'UNREACHABLE', neverConnected: false });
+      mock.restoreAll();
+    }
+  });
+
   test('a timeout becomes TIMEOUT', async () => {
     mock.method(globalThis, 'fetch', async () => {
       throw new DOMException('The operation was aborted due to timeout', 'TimeoutError');

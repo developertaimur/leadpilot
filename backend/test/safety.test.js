@@ -36,6 +36,14 @@ test('config/env.js exposes the fake values, not the real .env', () => {
   assert.equal(env.openwaWebhookSecret, 'test-openwa-webhook-secret');
 });
 
+test('BATCH_* settings are the test values from test.env', () => {
+  const env = require('../src/config/env');
+  assert.equal(process.env.BATCH_DELAY_SECONDS, '7');
+  assert.equal(process.env.BATCH_DAILY_CAP, '5');
+  assert.equal(process.env.BATCH_MAX_CONSECUTIVE_FAILURES, '2');
+  assert.deepEqual([env.batchDelaySeconds, env.batchDailyCap, env.batchMaxConsecutiveFailures], [7, 5, 2]);
+});
+
 test('no Meta WhatsApp settings remain in config/env.js', () => {
   const env = require('../src/config/env');
   assert.deepEqual(Object.keys(env).filter((key) => key.startsWith('whatsapp')), []);

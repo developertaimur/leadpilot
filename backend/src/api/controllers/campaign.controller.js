@@ -41,14 +41,20 @@ async function updateStatus(req, res) {
   }
 }
 
+const BATCH_ERROR_STATUS = new Map([
+  ['Campaign not found', 404],
+  ['A batch is already running', 409],
+  ['First-contact limit for the last 24 hours reached', 429],
+]);
+
+// 202: the batch is queued and sends in the background; `done` (its promise) is not part of the response.
 async function sendBatch(req, res) {
   try {
     const { count } = req.body || {};
-    const result = await sendBatchUseCase.sendBatch(Number(req.params.id), Number(count));
-    res.status(200).json(result);
+    const { done, ...result } = await sendBatchUseCase.sendBatch(Number(req.params.id), Number(count));
+    res.status(202).json(result);
   } catch (err) {
-    const code = err.message === 'Campaign not found' ? 404 : 400;
-    res.status(code).json({ error: err.message });
+    res.status(BATCH_ERROR_STATUS.get(err.message) ?? 400).json({ error: err.message });
   }
 }
 

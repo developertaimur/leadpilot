@@ -4,14 +4,34 @@ const SEND_TIMEOUT_MS = 20000; // OpenWA's simulated typing alone can take ~5.75
 const LOOKUP_TIMEOUT_MS = 10000;
 const MAX_TEXT_LENGTH = 4096;
 
+// Socket errors raised while resolving or connecting: the request never reached OpenWA.
+const NOT_CONNECTED_CODES = new Set([
+  'ECONNREFUSED',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'EHOSTUNREACH',
+  'ENETUNREACH',
+  'EADDRNOTAVAIL',
+  'UND_ERR_CONNECT_TIMEOUT',
+]);
+
 class OpenWAError extends Error {
-  constructor(message, { status = null, code = null, retryAfterSeconds = null, cause } = {}) {
+  constructor(message, { status = null, code = null, retryAfterSeconds = null, neverConnected = false, cause } = {}) {
     super(message, { cause });
     this.name = 'OpenWAError';
     this.status = status;
     this.code = code;
     this.retryAfterSeconds = retryAfterSeconds;
+    this.neverConnected = neverConnected;
   }
+}
+
+// True only when fetch failed before a connection existed; false whenever it cannot tell.
+function failedBeforeConnecting(fetchError) {
+  const cause = fetchError?.cause;
+  if (NOT_CONNECTED_CODES.has(cause?.code)) return true;
+  const inner = Array.isArray(cause?.errors) ? cause.errors : [];
+  return inner.length > 0 && inner.every((err) => NOT_CONNECTED_CODES.has(err?.code));
 }
 
 function sessionUrl(path) {
@@ -41,6 +61,7 @@ async function request(method, path, body, timeoutMs) {
     const timedOut = err.name === 'TimeoutError';
     throw new OpenWAError(timedOut ? `OpenWA did not answer within ${timeoutMs} ms` : 'OpenWA is unreachable', {
       code: timedOut ? 'TIMEOUT' : 'UNREACHABLE',
+      neverConnected: !timedOut && failedBeforeConnecting(err),
       cause: err,
     });
   }
