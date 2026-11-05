@@ -1,6 +1,7 @@
 const env = require('../../config/env');
 
 const SEND_TIMEOUT_MS = 20000; // OpenWA's simulated typing alone can take ~5.75 s
+const LOOKUP_TIMEOUT_MS = 10000;
 const MAX_TEXT_LENGTH = 4096;
 
 class OpenWAError extends Error {
@@ -66,4 +67,10 @@ async function sendText(chatId, text) {
   return { messageId: data?.messageId ?? null, timestamp: data?.timestamp ?? null };
 }
 
-module.exports = { sendText, OpenWAError };
+// Phone digits for a contact id such as "<lid>@lid", or null when OpenWA cannot map it.
+async function resolveLidPhone(contactId) {
+  const data = await request('GET', `/contacts/${encodeURIComponent(contactId)}/phone`, undefined, LOOKUP_TIMEOUT_MS);
+  return typeof data?.phone === 'string' && /^\d{7,15}$/.test(data.phone) ? data.phone : null;
+}
+
+module.exports = { sendText, resolveLidPhone, OpenWAError };

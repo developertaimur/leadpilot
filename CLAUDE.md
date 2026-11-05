@@ -104,8 +104,6 @@ Mock with `mock.method(moduleObject, 'fn')` and always `mock.restoreAll()` in `a
 - `syncCampaignFromSheet` destructures `getSheetRows` at require time, so it can't be mocked yet.
 - `server.js` creates the app and calls `listen()` in one file, so tests can't import it; route tests
   use `startApp` instead.
-- `whatsapp.controller.js` destructures `handleIncomingWhatsAppMessage` at require time, so webhook
-  route tests can't mock that use case yet.
 
 ### AI providers
 - **Gemini** (primary): SDK is `@google/genai` — NOT the legacy `@google/generative-ai`. Model `gemini-3.5-flash`.

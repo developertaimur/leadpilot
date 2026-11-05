@@ -1,7 +1,7 @@
 const { test, describe, mock, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const env = require('../../src/config/env');
-const { sendText, OpenWAError } = require('../../src/infrastructure/whatsapp/openwa.client');
+const { sendText, resolveLidPhone, OpenWAError } = require('../../src/infrastructure/whatsapp/openwa.client');
 
 const SEND_URL = 'http://127.0.0.1:1/api/sessions/test-openwa-session-id/messages/send-text';
 
@@ -118,5 +118,28 @@ describe('openwaClient.sendText', () => {
     const fetchMock = mock.method(globalThis, 'fetch');
     await assert.rejects(sendText('923001234567@c.us', 'x'.repeat(4097)), { code: 'INVALID_TEXT' });
     assert.equal(fetchMock.mock.callCount(), 0);
+  });
+});
+
+describe('openwaClient.resolveLidPhone', () => {
+  test('GETs the contact phone route for the encoded id and returns the digits', async () => {
+    const fetchMock = mock.method(globalThis, 'fetch', async () =>
+      jsonResponse(200, { contactId: '1234567890@lid', phone: '923001234567' }));
+
+    assert.equal(await resolveLidPhone('1234567890@lid'), '923001234567');
+    const [url, init] = fetchMock.mock.calls[0].arguments;
+    assert.equal(url, 'http://127.0.0.1:1/api/sessions/test-openwa-session-id/contacts/1234567890%40lid/phone');
+    assert.equal(init.method, 'GET');
+    assert.equal(init.headers['X-API-Key'], 'test-openwa-api-key');
+    assert.equal(init.headers['Content-Type'], undefined);
+    assert.equal(init.body, undefined);
+  });
+
+  test('returns null when OpenWA has no phone or answers with something that is not digits', async () => {
+    for (const phone of [null, '', 'unknown', '12']) {
+      mock.method(globalThis, 'fetch', async () => jsonResponse(200, { contactId: '1234567890@lid', phone }));
+      assert.equal(await resolveLidPhone('1234567890@lid'), null);
+      mock.restoreAll();
+    }
   });
 });

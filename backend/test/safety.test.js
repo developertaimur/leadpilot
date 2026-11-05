@@ -17,7 +17,6 @@ test('OPENWA_BASE_URL points at a dead local port', () => {
 });
 
 test('external service credentials are the fake test values', () => {
-  assert.equal(process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN, 'test-verify-token');
   assert.equal(process.env.GEMINI_API_KEY, 'test-gemini-key');
   assert.equal(process.env.GROQ_API_KEY, 'test-groq-key');
   assert.equal(process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH, './test/does-not-exist.json');
@@ -35,6 +34,11 @@ test('config/env.js exposes the fake values, not the real .env', () => {
   assert.equal(env.openwaApiKey, 'test-openwa-api-key');
   assert.equal(env.openwaSessionId, 'test-openwa-session-id');
   assert.equal(env.openwaWebhookSecret, 'test-openwa-webhook-secret');
+});
+
+test('no Meta WhatsApp settings remain in config/env.js', () => {
+  const env = require('../src/config/env');
+  assert.deepEqual(Object.keys(env).filter((key) => key.startsWith('whatsapp')), []);
 });
 
 test('fetch to a non-local URL is blocked (string, URL and Request)', async () => {
