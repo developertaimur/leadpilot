@@ -1,13 +1,11 @@
 const { GoogleGenAI, ApiError, Type } = require('@google/genai');
-const { LeadStage } = require('@prisma/client');
 const env = require('../../config/env');
 const { failedBeforeConnecting } = require('../http/connectionErrors');
+const { STAGES, assertReplyRequest, parseStructuredReply } = require('./replyValidation');
 
 const MODEL = 'gemini-3.5-flash';
 const BASE_URL = 'https://generativelanguage.googleapis.com/';
 const TIMEOUT_MS = 20000;
-const MAX_REPLY_LENGTH = 4096;
-const STAGES = Object.values(LeadStage);
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
@@ -28,26 +26,6 @@ class GeminiError extends Error {
     this.name = 'GeminiError';
     this.code = code; // QUOTA | TIMEOUT | NOT_CONFIGURED | INVALID_RESPONSE | UNREACHABLE | API_ERROR
     this.status = status;
-  }
-}
-
-const invalidResponse = () => new GeminiError('INVALID_RESPONSE', 'Gemini returned an invalid reply');
-
-function isPlainObject(value) {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function assertRequest(systemInstruction, messages) {
-  const valid =
-    typeof systemInstruction === 'string' &&
-    systemInstruction.trim() !== '' &&
-    Array.isArray(messages) &&
-    messages.length > 0 &&
-    messages.every(
-      (m) => isPlainObject(m) && (m.role === 'user' || m.role === 'model') && typeof m.text === 'string' && m.text.trim() !== '',
-    );
-  if (!valid) {
-    throw new TypeError('generateStructuredReply needs a non-empty systemInstruction and messages as [{ role: "user" | "model", text }]');
   }
 }
 
@@ -75,27 +53,16 @@ function toGeminiError(err) {
 }
 
 // Reads the first candidate's text parts directly (skipping "thought" parts), so the SDK's
-// response.text getter never logs, then validates the four fields strictly.
+// response.text getter never logs; the shared module then validates the four fields strictly.
 function parseReply(response) {
   const parts = response?.candidates?.[0]?.content?.parts;
   const text = Array.isArray(parts)
     ? parts.filter((part) => !part?.thought && typeof part?.text === 'string').map((part) => part.text).join('')
     : '';
 
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw invalidResponse();
-  }
-  if (!isPlainObject(data)) throw invalidResponse();
-
-  const { reply, suggestedStage, reason, requiresHuman } = data;
-  if (typeof reply !== 'string' || reply.trim() === '' || reply.trim().length > MAX_REPLY_LENGTH) throw invalidResponse();
-  if (suggestedStage !== null && !STAGES.includes(suggestedStage)) throw invalidResponse();
-  if (typeof reason !== 'string' || typeof requiresHuman !== 'boolean') throw invalidResponse();
-
-  return { reply: reply.trim(), suggestedStage, reason: reason.trim(), requiresHuman };
+  const { value, error } = parseStructuredReply(text);
+  if (error) throw new GeminiError(error, 'Gemini returned an invalid reply');
+  return value;
 }
 
 // One Gemini call: messages ([{ role: 'user' | 'model', text }]) under systemInstruction, answered as
@@ -103,7 +70,7 @@ function parseReply(response) {
 // The SDK retries only when given retryOptions; none are passed, so there is exactly one attempt.
 async function generateStructuredReply({ systemInstruction, messages } = {}) {
   if (!env.geminiApiKey) throw new GeminiError('NOT_CONFIGURED', 'Gemini is not configured (GEMINI_API_KEY)');
-  assertRequest(systemInstruction, messages);
+  assertReplyRequest(systemInstruction, messages);
 
   // Explicit apiKey, vertexai and baseUrl, so the SDK's own environment variables can never apply.
   const ai = new GoogleGenAI({
