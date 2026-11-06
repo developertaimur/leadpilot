@@ -1,20 +1,10 @@
 const env = require('../../config/env');
+const { failedBeforeConnecting } = require('../http/connectionErrors');
 
 const SEND_TIMEOUT_MS = 20000; // OpenWA's simulated typing alone can take ~5.75 s
 const LOOKUP_TIMEOUT_MS = 10000;
 const STATUS_TIMEOUT_MS = 10000;
 const MAX_TEXT_LENGTH = 4096;
-
-// Socket errors raised while resolving or connecting: the request never reached OpenWA.
-const NOT_CONNECTED_CODES = new Set([
-  'ECONNREFUSED',
-  'ENOTFOUND',
-  'EAI_AGAIN',
-  'EHOSTUNREACH',
-  'ENETUNREACH',
-  'EADDRNOTAVAIL',
-  'UND_ERR_CONNECT_TIMEOUT',
-]);
 
 class OpenWAError extends Error {
   constructor(message, { status = null, code = null, retryAfterSeconds = null, neverConnected = false, cause } = {}) {
@@ -25,14 +15,6 @@ class OpenWAError extends Error {
     this.retryAfterSeconds = retryAfterSeconds;
     this.neverConnected = neverConnected;
   }
-}
-
-// True only when fetch failed before a connection existed; false whenever it cannot tell.
-function failedBeforeConnecting(fetchError) {
-  const cause = fetchError?.cause;
-  if (NOT_CONNECTED_CODES.has(cause?.code)) return true;
-  const inner = Array.isArray(cause?.errors) ? cause.errors : [];
-  return inner.length > 0 && inner.every((err) => NOT_CONNECTED_CODES.has(err?.code));
 }
 
 function sessionUrl(path) {
