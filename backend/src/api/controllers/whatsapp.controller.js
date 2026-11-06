@@ -1,4 +1,5 @@
 const handleIncomingWhatsAppMessageUseCase = require('../../application/useCases/handleIncomingWhatsAppMessage.useCase');
+const getWhatsAppStatusUseCase = require('../../application/useCases/getWhatsAppStatus.useCase');
 const openwaWebhook = require('../../infrastructure/whatsapp/openwa.webhook');
 
 // Runs after verifyOpenWASignature. Answers 200 only once the message is saved or deliberately
@@ -30,4 +31,14 @@ async function receiveWebhook(req, res) {
   }
 }
 
-module.exports = { receiveWebhook };
+// 502 for any OpenWA answer other than a usable status; details stay in the log as a code only.
+async function getStatus(req, res) {
+  try {
+    res.json(await getWhatsAppStatusUseCase.getWhatsAppStatus());
+  } catch (err) {
+    console.error(`WhatsApp status check failed (${err.code ?? err.status ?? err.name})`);
+    res.status(502).json({ error: 'OpenWA error' });
+  }
+}
+
+module.exports = { receiveWebhook, getStatus };

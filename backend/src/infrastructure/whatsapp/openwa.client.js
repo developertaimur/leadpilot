@@ -2,6 +2,7 @@ const env = require('../../config/env');
 
 const SEND_TIMEOUT_MS = 20000; // OpenWA's simulated typing alone can take ~5.75 s
 const LOOKUP_TIMEOUT_MS = 10000;
+const STATUS_TIMEOUT_MS = 10000;
 const MAX_TEXT_LENGTH = 4096;
 
 // Socket errors raised while resolving or connecting: the request never reached OpenWA.
@@ -94,4 +95,14 @@ async function resolveLidPhone(contactId) {
   return typeof data?.phone === 'string' && /^\d{7,15}$/.test(data.phone) ? data.phone : null;
 }
 
-module.exports = { sendText, resolveLidPhone, OpenWAError };
+// Status of the configured session from GET /api/sessions/{sessionId}. Returns only { status }, the
+// lowercase word OpenWA reports (e.g. "ready", "qr_ready", "disconnected"); every other field is dropped.
+async function getSessionStatus() {
+  const data = await request('GET', '', undefined, STATUS_TIMEOUT_MS);
+  if (typeof data?.status !== 'string' || !/^[a-z_]{1,32}$/.test(data.status)) {
+    throw new OpenWAError('OpenWA returned no session status', { code: 'INVALID_RESPONSE' });
+  }
+  return { status: data.status };
+}
+
+module.exports = { sendText, resolveLidPhone, getSessionStatus, OpenWAError };

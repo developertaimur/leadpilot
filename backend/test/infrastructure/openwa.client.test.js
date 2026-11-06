@@ -1,7 +1,7 @@
 const { test, describe, mock, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const env = require('../../src/config/env');
-const { sendText, resolveLidPhone, OpenWAError } = require('../../src/infrastructure/whatsapp/openwa.client');
+const { sendText, resolveLidPhone, getSessionStatus, OpenWAError } = require('../../src/infrastructure/whatsapp/openwa.client');
 
 const SEND_URL = 'http://127.0.0.1:1/api/sessions/test-openwa-session-id/messages/send-text';
 
@@ -140,6 +140,30 @@ describe('openwaClient.sendText', () => {
     const fetchMock = mock.method(globalThis, 'fetch');
     await assert.rejects(sendText('923001234567@c.us', 'x'.repeat(4097)), { code: 'INVALID_TEXT' });
     assert.equal(fetchMock.mock.callCount(), 0);
+  });
+});
+
+describe('openwaClient.getSessionStatus', () => {
+  test('GETs the session route with the API key and returns only the status', async () => {
+    const fetchMock = mock.method(globalThis, 'fetch', async () =>
+      jsonResponse(200, { id: 'test-openwa-session-id', status: 'qr_ready', phone: '6281234567890', pushName: 'Gymfinity' }));
+
+    assert.deepEqual(await getSessionStatus(), { status: 'qr_ready' });
+    const [url, init] = fetchMock.mock.calls[0].arguments;
+    assert.equal(url, 'http://127.0.0.1:1/api/sessions/test-openwa-session-id');
+    assert.equal(init.method, 'GET');
+    assert.equal(init.headers['X-API-Key'], 'test-openwa-api-key');
+    assert.equal(init.headers['Content-Type'], undefined);
+    assert.equal(init.body, undefined);
+    assert.ok(init.signal instanceof AbortSignal);
+  });
+
+  test('a missing or unexpected status is INVALID_RESPONSE', async () => {
+    for (const status of [undefined, null, 42, 'READY', 'ready now', 'x'.repeat(33)]) {
+      mock.method(globalThis, 'fetch', async () => jsonResponse(200, { id: 'test-openwa-session-id', status }));
+      await assert.rejects(getSessionStatus(), { name: 'OpenWAError', code: 'INVALID_RESPONSE' });
+      mock.restoreAll();
+    }
   });
 });
 
