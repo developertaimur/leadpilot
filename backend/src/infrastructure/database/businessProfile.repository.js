@@ -9,7 +9,7 @@ async function updateBusinessProfile(id, data) {
 }
 
 async function getBusinessProfile() {
-  return prisma.businessProfile.findFirst();
+  return prisma.businessProfile.findFirst({ orderBy: { id: 'asc' } });
 }
 
 module.exports = { createBusinessProfile, updateBusinessProfile, getBusinessProfile };

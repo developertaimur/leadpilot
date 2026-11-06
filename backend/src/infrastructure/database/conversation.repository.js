@@ -18,6 +18,11 @@ async function findConversationById(id) {
   });
 }
 
+// The conversation and its lead, without the messages (the AI pipeline's lookups).
+async function findConversationWithLead(id) {
+  return prisma.conversation.findUnique({ where: { id }, include: { lead: true } });
+}
+
 async function findConversationByLeadId(leadId) {
   return prisma.conversation.findUnique({
     where: { leadId },
@@ -46,6 +51,7 @@ module.exports = {
   createConversation,
   findAllConversations,
   findConversationById,
+  findConversationWithLead,
   findConversationByLeadId,
   setHumanTakeover,
   countRecentCampaignConversations,
