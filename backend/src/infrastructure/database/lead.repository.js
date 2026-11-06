@@ -1,4 +1,5 @@
 const prisma = require('./prismaClient');
+const { stageChangeData } = require('../../domain/rules/leadStage.rules');
 
 // async function createLead({ name, phoneNumber, source }) {
 //   return prisma.lead.create({
@@ -20,6 +21,7 @@ async function findAllLeads(filters = {}) {
   if (filters.source) where.source = filters.source;
   if (filters.channel === 'outbound') where.campaignId = { not: null };
   if (filters.channel === 'inbound') where.campaignId = null;
+  if (filters.aiSuggestedStage) where.aiSuggestedStage = filters.aiSuggestedStage;
 
   return prisma.lead.findMany({ where, orderBy: { createdAt: 'desc' } });
 }
@@ -30,8 +32,14 @@ async function findLeadById(id) {
   return prisma.lead.findUnique({ where: { id } });
 }
 
+// The only function that writes Lead.stage; every stage change also clears the AI suggestion.
 async function updateLeadStage(id, stage) {
-  return prisma.lead.update({ where: { id }, data: { stage } });
+  return prisma.lead.update({ where: { id }, data: stageChangeData(stage) });
+}
+
+// Writes only the two AI suggestion fields, never stage.
+async function updateAiSuggestion(id, aiSuggestedStage, aiSuggestionReason) {
+  return prisma.lead.update({ where: { id }, data: { aiSuggestedStage, aiSuggestionReason } });
 }
 
 async function deleteLead(id) {
@@ -62,4 +70,4 @@ async function updateLeadCampaign(id, campaignId) {
   return prisma.lead.update({ where: { id }, data: { campaignId } });
 }
 
-module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead, updateLeadInfo, getLeadStats, updateLeadCampaign };
+module.exports = { createLead, findLeadByPhone, findAllLeads, findLeadById, updateLeadStage, deleteLead, updateLeadInfo, getLeadStats, updateLeadCampaign, updateAiSuggestion };

@@ -29,8 +29,8 @@ async function createLead(req, res) {
 
 async function listLeads(req, res) {
   try {
-    const { stage, source, channel } = req.query;
-    const leads = await listLeadsUseCase.listLeads({ stage, source, channel });
+    const { stage, source, channel, aiSuggestedStage } = req.query;
+    const leads = await listLeadsUseCase.listLeads({ stage, source, channel, aiSuggestedStage });
     res.json(leads);
   } catch (err) {
     res.status(400).json({ error: err.message });
