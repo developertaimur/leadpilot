@@ -20,4 +20,6 @@ module.exports = {
   batchMaxConsecutiveFailures: positiveInteger(process.env.BATCH_MAX_CONSECUTIVE_FAILURES, 3),
   geminiApiKey: process.env.GEMINI_API_KEY,
   groqApiKey: process.env.GROQ_API_KEY,
+  // AI auto-replies to inbound WhatsApp messages: on only for "true" (trimmed, any case); anything else is off.
+  aiAutoReplyEnabled: String(process.env.AI_AUTO_REPLY_ENABLED ?? '').trim().toLowerCase() === 'true',
 };

@@ -1,6 +1,7 @@
 const handleIncomingWhatsAppMessageUseCase = require('../../application/useCases/handleIncomingWhatsAppMessage.useCase');
 const getWhatsAppStatusUseCase = require('../../application/useCases/getWhatsAppStatus.useCase');
 const openwaWebhook = require('../../infrastructure/whatsapp/openwa.webhook');
+const autoReply = require('../../application/ai/autoReply');
 
 // Runs after verifyOpenWASignature. Answers 200 only once the message is saved or deliberately
 // ignored, so OpenWA retries when saving fails. Logs never include message text, names or phone numbers.
@@ -19,15 +20,22 @@ async function receiveWebhook(req, res) {
     return res.sendStatus(200);
   }
 
+  let result;
   try {
-    const result = await handleIncomingWhatsAppMessageUseCase.handleIncomingWhatsAppMessage(parsed);
+    result = await handleIncomingWhatsAppMessageUseCase.handleIncomingWhatsAppMessage(parsed);
     if (result.skipped) {
       console.warn(`Skipped WhatsApp message ${logId}: ${result.reason}`);
     }
-    return res.sendStatus(200);
+    res.sendStatus(200);
   } catch (err) {
     console.error(`Failed to save WhatsApp message ${logId} (${err.code ?? err.name})`);
     return res.status(500).json({ error: 'Failed to process message' });
+  }
+
+  // Only after the 200 has been sent, and only for a message saved just now (not a duplicate or a skip):
+  // the AI reply runs in the background, so OpenWA never waits for it or sees its errors.
+  if (!result.skipped && result.duplicate === false) {
+    autoReply.scheduleReply(result.conversationId, result.messageId);
   }
 }
 

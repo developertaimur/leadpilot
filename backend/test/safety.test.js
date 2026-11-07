@@ -81,3 +81,9 @@ test('a fetch mock replaces the guard, and mock.restoreAll() puts the guard back
   assert.equal(globalThis.fetch, guard);
   await assert.rejects(fetch('http://127.0.0.1:2785/api/sessions'), /Blocked outbound fetch/);
 });
+
+test('the AI auto-reply switch is off in tests unless a test turns it on itself', () => {
+  const env = require('../src/config/env');
+  assert.equal(process.env.AI_AUTO_REPLY_ENABLED, 'false');
+  assert.equal(env.aiAutoReplyEnabled, false);
+});
